@@ -1,0 +1,12 @@
+PIPOCRUNCH — site estático
+
+A pasta `out` já é o site pronto. Envie o CONTEÚDO dela
+(index.html, logo.png, images, _next, 404.html) para a
+hospedagem (public_html, htdocs, Netlify, etc.).
+
+Para gerar de novo no computador:
+  npm install
+  npm run build
+
+Para testar o site estático localmente:
+  npm start
