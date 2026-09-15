@@ -26,18 +26,18 @@ export function Hero() {
       />
       <div className="absolute inset-0 bg-gradient-to-b from-burgundy via-burgundy/70 to-burgundy" />
 
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-5 pb-16 pt-28 text-center md:px-8">
-        <p className="reveal text-[11px] tracking-[0.42em] text-gold uppercase">
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-6 pb-16 pt-28 text-center sm:px-8">
+        <p className="reveal px-2 text-[10px] tracking-[0.3em] text-gold uppercase sm:text-[11px] sm:tracking-[0.42em]">
           Gourmet popcorn · {site.city}
         </p>
         <Logo
-          className="reveal reveal-delay-1 float-y mt-8 h-auto w-52 drop-shadow-[0_18px_40px_rgba(0,0,0,0.45)] md:w-64"
+          className="reveal reveal-delay-1 float-y mt-8 h-auto w-32 drop-shadow-[0_18px_40px_rgba(0,0,0,0.45)] sm:w-44 md:w-64"
           priority
         />
-        <h1 className="reveal reveal-delay-2 mt-8 font-serif text-5xl tracking-[0.18em] text-gold drop-shadow-[0_8px_24px_rgba(0,0,0,0.45)] md:text-7xl">
+        <h1 className="reveal reveal-delay-2 mt-8 max-w-full font-serif text-4xl tracking-[0.06em] text-gold drop-shadow-[0_8px_24px_rgba(0,0,0,0.45)] sm:text-6xl sm:tracking-[0.12em] md:text-7xl md:tracking-[0.18em]">
           PIPOCRUNCH
         </h1>
-        <p className="reveal reveal-delay-3 mt-4 max-w-xl font-serif text-2xl tracking-[0.08em] text-cream md:text-3xl">
+        <p className="reveal reveal-delay-3 mt-4 max-w-xl font-serif text-xl tracking-[0.04em] text-cream sm:text-2xl sm:tracking-[0.08em] md:text-3xl">
           {site.tagline}
         </p>
         <p className="mt-6 max-w-lg text-sm leading-relaxed text-cream/75 md:text-base">
