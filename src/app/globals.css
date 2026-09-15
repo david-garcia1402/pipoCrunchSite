@@ -30,6 +30,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 section[id] {
@@ -37,6 +38,7 @@ section[id] {
 }
 
 body {
+  overflow-x: hidden;
   background: var(--cream);
   color: var(--ink);
   font-family: var(--font-sans);
