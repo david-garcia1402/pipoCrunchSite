@@ -171,9 +171,9 @@ export function Order() {
   }, []);
 
   return (
-    <section id="pedido" className="bg-cream-soft px-5 py-24 md:px-8">
-      <div className="mx-auto grid max-w-6xl gap-10 rounded-[2.5rem] bg-burgundy p-6 text-cream md:grid-cols-[1.1fr_0.9fr] md:p-12">
-        <div>
+    <section id="pedido" className="bg-cream-soft px-4 py-16 sm:px-5 md:px-8 md:py-24">
+      <div className="mx-auto grid w-full min-w-0 max-w-6xl gap-8 rounded-[2rem] bg-burgundy p-4 text-cream sm:gap-10 sm:rounded-[2.5rem] sm:p-6 md:grid-cols-[1.1fr_0.9fr] md:p-12">
+        <div className="min-w-0">
           <p className="text-[11px] tracking-[0.32em] text-gold uppercase">Pedido</p>
           <h2 className="mt-3 font-serif text-4xl text-gold md:text-5xl">
             Monte o seu
@@ -242,36 +242,39 @@ export function Order() {
           </div>
         </div>
 
-        <aside className="flex flex-col justify-between rounded-[1.75rem] border border-gold/20 bg-burgundy-deep/70 p-6">
-          <div>
+        <aside className="flex min-w-0 flex-col justify-between rounded-[1.5rem] border border-gold/20 bg-burgundy-deep/70 p-4 sm:rounded-[1.75rem] sm:p-6">
+          <div className="min-w-0">
             <p className="font-script text-3xl text-gold">Seu pedido</p>
             <dl className="mt-6 space-y-4 text-sm">
-              <div className="flex justify-between gap-4 border-b border-gold/15 pb-3">
-                <dt className="text-cream/55">Linha</dt>
-                <dd>{lines.find((item) => item.id === line)?.label}</dd>
+              <div className="flex items-start justify-between gap-3 border-b border-gold/15 pb-3">
+                <dt className="shrink-0 text-cream/55">Linha</dt>
+                <dd className="min-w-0 text-right break-words">
+                  {lines.find((item) => item.id === line)?.label}
+                </dd>
               </div>
-              <div className="flex justify-between gap-4 border-b border-gold/15 pb-3">
-                <dt className="text-cream/55">Sabor</dt>
-                <dd className="text-right">{flavor}</dd>
+              <div className="flex items-start justify-between gap-3 border-b border-gold/15 pb-3">
+                <dt className="shrink-0 text-cream/55">Sabor</dt>
+                <dd className="min-w-0 text-right break-words">{flavor}</dd>
               </div>
-              <div className="flex justify-between gap-4 border-b border-gold/15 pb-3">
-                <dt className="text-cream/55">Tamanho</dt>
-                <dd>{selectedSize.label}</dd>
+              <div className="flex items-start justify-between gap-3 border-b border-gold/15 pb-3">
+                <dt className="shrink-0 text-cream/55">Tamanho</dt>
+                <dd className="min-w-0 text-right">{selectedSize.label}</dd>
               </div>
             </dl>
 
-            <form className="mt-6" onSubmit={consultFreight}>
+            <form className="mt-6 min-w-0" onSubmit={consultFreight}>
               <label
                 htmlFor="frete-cep"
                 className="text-[11px] tracking-[0.22em] text-gold/80 uppercase"
               >
                 Consultar frete
               </label>
-              <p id="frete-ajuda" className="mt-2 text-xs leading-relaxed text-cream/55">
+              <p id="frete-ajuda" className="mt-2 text-pretty text-xs leading-relaxed text-cream/55">
                 R$ {formatBrl(FREIGHT_BRL_PER_KM)} por km rodado, a partir do{" "}
-                {deliveryOrigin.label}. O valor entra na mensagem do WhatsApp.
+                <span className="whitespace-nowrap">{deliveryOrigin.label}</span>. O valor
+                entra na mensagem do WhatsApp.
               </p>
-              <div className="mt-3 flex gap-2">
+              <div className="mt-3 flex flex-col gap-2 sm:flex-row">
                 <input
                   id="frete-cep"
                   name="cep"
@@ -285,12 +288,12 @@ export function Order() {
                   aria-invalid={freightError ? true : undefined}
                   value={cep}
                   onChange={(event) => updateCep(event.target.value)}
-                  className="min-w-0 flex-1 rounded-full border border-gold/30 bg-burgundy-deep/40 px-4 py-2 text-sm text-cream outline-none placeholder:text-cream/35 focus:border-gold"
+                  className="w-full min-w-0 flex-1 rounded-full border border-gold/30 bg-burgundy-deep/40 px-4 py-3 text-sm text-cream outline-none placeholder:text-cream/35 focus:border-gold sm:py-2"
                 />
                 <button
                   type="submit"
                   disabled={freightLoading}
-                  className="shrink-0 rounded-full border border-gold px-4 py-2 text-[11px] font-semibold tracking-[0.16em] whitespace-nowrap text-gold uppercase transition hover:bg-gold hover:text-burgundy-deep disabled:cursor-not-allowed disabled:opacity-40"
+                  className="w-full shrink-0 rounded-full border border-gold px-4 py-3 text-[11px] font-semibold tracking-[0.16em] text-gold uppercase transition hover:bg-gold hover:text-burgundy-deep disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto sm:py-2"
                 >
                   {freightLoading ? "Consultando" : "Consultar"}
                 </button>
@@ -309,24 +312,24 @@ export function Order() {
             <dl className="mt-6 space-y-4 text-sm">
               {quote ? (
                 <>
-                  <div className="flex justify-between gap-4 border-b border-gold/15 pb-3">
-                    <dt className="text-cream/55">Produto</dt>
-                    <dd>R$ {selectedSize.price}</dd>
+                  <div className="flex items-start justify-between gap-3 border-b border-gold/15 pb-3">
+                    <dt className="shrink-0 text-cream/55">Produto</dt>
+                    <dd className="text-right">R$ {selectedSize.price}</dd>
                   </div>
-                  <div className="flex justify-between gap-4 border-b border-gold/15 pb-3">
-                    <dt className="text-cream/55">Entrega</dt>
-                    <dd className="max-w-[14rem] text-right">{quote.addressLabel}</dd>
+                  <div className="flex items-start justify-between gap-3 border-b border-gold/15 pb-3">
+                    <dt className="shrink-0 text-cream/55">Entrega</dt>
+                    <dd className="min-w-0 text-right break-words">{quote.addressLabel}</dd>
                   </div>
-                  <div className="flex justify-between gap-4 border-b border-gold/15 pb-3">
-                    <dt className="text-cream/55">Distância</dt>
-                    <dd className="text-right">
+                  <div className="flex items-start justify-between gap-3 border-b border-gold/15 pb-3">
+                    <dt className="shrink-0 text-cream/55">Distância</dt>
+                    <dd className="min-w-0 text-right">
                       {formatKm(quote.distanceKm)} km
                       {quote.distanceKind === "straight" ? " (linha reta)" : ""}
                     </dd>
                   </div>
-                  <div className="flex justify-between gap-4 border-b border-gold/15 pb-3">
-                    <dt className="text-cream/55">Frete</dt>
-                    <dd className="text-right">
+                  <div className="flex items-start justify-between gap-3 border-b border-gold/15 pb-3">
+                    <dt className="shrink-0 text-cream/55">Frete</dt>
+                    <dd className="min-w-0 text-right">
                       R$ {formatBrl(quote.price)}
                       <span className="mt-1 block text-xs text-cream/50">
                         {formatKm(quote.distanceKm)} km × R$ {formatBrl(FREIGHT_BRL_PER_KM)}
@@ -335,8 +338,8 @@ export function Order() {
                   </div>
                 </>
               ) : null}
-              <div className="flex justify-between gap-4">
-                <dt className="text-cream/55">Total</dt>
+              <div className="flex items-end justify-between gap-3">
+                <dt className="shrink-0 text-cream/55">Total</dt>
                 <dd className="font-serif text-2xl text-gold">R$ {formatBrl(total)}</dd>
               </div>
             </dl>
