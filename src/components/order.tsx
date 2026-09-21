@@ -1,6 +1,21 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import {
+  FREIGHT_BRL_PER_KM,
+  FreightError,
+  deliveryOrigin,
+  fetchFreightQuote,
+  formatBrl,
+  formatKm,
+  freightMessageLines,
+  isAbortError,
+  isCompleteCep,
+  maskCep,
+  onlyDigits,
+  orderTotal,
+  type FreightQuote,
+} from "@/lib/freight";
 import {
   ORDER_LINE_EVENT,
   filledFlavors,
@@ -43,6 +58,12 @@ export function Order() {
   const [line, setLine] = useState<OrderLine>("gourmet");
   const [flavor, setFlavor] = useState<string>(gourmetCoatings[0].name);
   const [size, setSize] = useState<string>(gourmetSizes[0].id);
+  const [cep, setCep] = useState("");
+  const [quote, setQuote] = useState<FreightQuote | null>(null);
+  const [freightError, setFreightError] = useState("");
+  const [freightLoading, setFreightLoading] = useState(false);
+  const freightRequest = useRef(0);
+  const freightAbort = useRef<AbortController | null>(null);
 
   const flavors = useMemo(() => {
     if (line === "gourmet") return gourmetCoatings;
@@ -57,10 +78,65 @@ export function Order() {
   }, [line]);
 
   const selectedSize = sizes.find((item) => item.id === size) ?? sizes[0];
+  const total = orderTotal(selectedSize.price, quote?.price ?? 0);
+  const lineLabel = lines.find((item) => item.id === line)?.label;
 
-  const message = `Olá! Quero pedir na PIPOCRUNCH:\n• Linha: ${
-    lines.find((item) => item.id === line)?.label
-  }\n• Sabor: ${flavor}\n• Tamanho: ${selectedSize.label}\n• Valor: R$ ${selectedSize.price}`;
+  const message = useMemo(() => {
+    const parts = [
+      "Olá! Quero pedir na PIPOCRUNCH:",
+      `• Linha: ${lineLabel}`,
+      `• Sabor: ${flavor}`,
+      `• Tamanho: ${selectedSize.label}`,
+      `• Valor: R$ ${selectedSize.price}`,
+    ];
+
+    if (quote) {
+      parts.push(...freightMessageLines(quote), `• Total: R$ ${formatBrl(total)}`);
+    }
+
+    return parts.join("\n");
+  }, [flavor, lineLabel, quote, selectedSize.label, selectedSize.price, total]);
+
+  function updateCep(value: string) {
+    const next = maskCep(value);
+    setCep(next);
+    setFreightError("");
+    if (quote && onlyDigits(next) !== onlyDigits(quote.cep)) {
+      setQuote(null);
+    }
+  }
+
+  async function consultFreight(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!isCompleteCep(cep)) {
+      setFreightError("Informe o CEP com 8 números.");
+      return;
+    }
+
+    const requestId = freightRequest.current + 1;
+    freightRequest.current = requestId;
+    freightAbort.current?.abort();
+    const controller = new AbortController();
+    freightAbort.current = controller;
+    setFreightLoading(true);
+    setFreightError("");
+
+    try {
+      const nextQuote = await fetchFreightQuote(cep, controller.signal);
+      if (freightRequest.current !== requestId) return;
+      setQuote(nextQuote);
+    } catch (error) {
+      if (freightRequest.current !== requestId || isAbortError(error)) return;
+      setQuote(null);
+      setFreightError(
+        error instanceof FreightError
+          ? error.message
+          : "Não foi possível consultar o frete agora. Tente de novo.",
+      );
+    } finally {
+      if (freightRequest.current === requestId) setFreightLoading(false);
+    }
+  }
 
   function changeLine(next: OrderLine) {
     const defaults = defaultsFor(next);
@@ -90,6 +166,7 @@ export function Order() {
     return () => {
       window.removeEventListener(ORDER_LINE_EVENT, onPreset);
       window.removeEventListener("popstate", onPopState);
+      freightAbort.current?.abort();
     };
   }, []);
 
@@ -102,8 +179,8 @@ export function Order() {
             Monte o seu
           </h2>
           <p className="mt-4 max-w-md text-sm text-cream/70">
-            Escolha a linha, o sabor e o tamanho. A gente recebe tudo prontinho
-            no WhatsApp.
+            Escolha a linha, o sabor e o tamanho. Consulte o frete pelo CEP e
+            envie o pedido no WhatsApp.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-2">
@@ -181,13 +258,99 @@ export function Order() {
                 <dt className="text-cream/55">Tamanho</dt>
                 <dd>{selectedSize.label}</dd>
               </div>
+            </dl>
+
+            <form className="mt-6" onSubmit={consultFreight}>
+              <label
+                htmlFor="frete-cep"
+                className="text-[11px] tracking-[0.22em] text-gold/80 uppercase"
+              >
+                Consultar frete
+              </label>
+              <p id="frete-ajuda" className="mt-2 text-xs leading-relaxed text-cream/55">
+                R$ {formatBrl(FREIGHT_BRL_PER_KM)} por km rodado, a partir do{" "}
+                {deliveryOrigin.label}. O valor entra na mensagem do WhatsApp.
+              </p>
+              <div className="mt-3 flex gap-2">
+                <input
+                  id="frete-cep"
+                  name="cep"
+                  inputMode="numeric"
+                  autoComplete="postal-code"
+                  autoCapitalize="off"
+                  spellCheck={false}
+                  enterKeyHint="search"
+                  placeholder="00000-000"
+                  aria-describedby="frete-ajuda"
+                  aria-invalid={freightError ? true : undefined}
+                  value={cep}
+                  onChange={(event) => updateCep(event.target.value)}
+                  className="min-w-0 flex-1 rounded-full border border-gold/30 bg-burgundy-deep/40 px-4 py-2 text-sm text-cream outline-none placeholder:text-cream/35 focus:border-gold"
+                />
+                <button
+                  type="submit"
+                  disabled={freightLoading}
+                  className="shrink-0 rounded-full border border-gold px-4 py-2 text-[11px] font-semibold tracking-[0.16em] whitespace-nowrap text-gold uppercase transition hover:bg-gold hover:text-burgundy-deep disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {freightLoading ? "Consultando" : "Consultar"}
+                </button>
+              </div>
+              <div aria-live="polite">
+                {freightLoading ? (
+                  <p className="mt-3 text-sm text-cream/70">Consultando frete…</p>
+                ) : freightError ? (
+                  <p role="alert" className="mt-3 text-sm text-gold-light">
+                    {freightError}
+                  </p>
+                ) : null}
+              </div>
+            </form>
+
+            <dl className="mt-6 space-y-4 text-sm">
+              {quote ? (
+                <>
+                  <div className="flex justify-between gap-4 border-b border-gold/15 pb-3">
+                    <dt className="text-cream/55">Produto</dt>
+                    <dd>R$ {selectedSize.price}</dd>
+                  </div>
+                  <div className="flex justify-between gap-4 border-b border-gold/15 pb-3">
+                    <dt className="text-cream/55">Entrega</dt>
+                    <dd className="max-w-[14rem] text-right">{quote.addressLabel}</dd>
+                  </div>
+                  <div className="flex justify-between gap-4 border-b border-gold/15 pb-3">
+                    <dt className="text-cream/55">Distância</dt>
+                    <dd className="text-right">
+                      {formatKm(quote.distanceKm)} km
+                      {quote.distanceKind === "straight" ? " (linha reta)" : ""}
+                    </dd>
+                  </div>
+                  <div className="flex justify-between gap-4 border-b border-gold/15 pb-3">
+                    <dt className="text-cream/55">Frete</dt>
+                    <dd className="text-right">
+                      R$ {formatBrl(quote.price)}
+                      <span className="mt-1 block text-xs text-cream/50">
+                        {formatKm(quote.distanceKm)} km × R$ {formatBrl(FREIGHT_BRL_PER_KM)}
+                      </span>
+                    </dd>
+                  </div>
+                </>
+              ) : null}
               <div className="flex justify-between gap-4">
                 <dt className="text-cream/55">Total</dt>
-                <dd className="font-serif text-2xl text-gold">
-                  R$ {selectedSize.price}
-                </dd>
+                <dd className="font-serif text-2xl text-gold">R$ {formatBrl(total)}</dd>
               </div>
             </dl>
+            {quote && quote.precision !== "street" ? (
+              <p className="mt-3 text-xs leading-relaxed text-cream/50">
+                Estimativa pelo {quote.precision === "neighborhood" ? "bairro" : "município"},
+                porque o logradouro do CEP não apareceu no mapa.
+              </p>
+            ) : null}
+            {quote ? null : (
+              <p className="mt-3 text-xs leading-relaxed text-cream/45">
+                Consulte o CEP para somar o frete ao total e incluir a entrega na mensagem.
+              </p>
+            )}
           </div>
           <a
             href={whatsappLink(message)}

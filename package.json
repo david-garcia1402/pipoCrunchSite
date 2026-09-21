@@ -8,6 +8,7 @@
     "export": "next build",
     "start": "npx --yes serve out",
     "lint": "eslint",
+    "test": "node --experimental-strip-types --test src/lib/freight.test.ts",
     "deploy": "npm run build && npx wrangler@4.131.2 deploy",
     "preview:cloudflare": "npm run build && npx wrangler@4.131.2 dev"
   },
