@@ -5,7 +5,7 @@ export function About() {
         <div>
           <p className="text-[11px] tracking-[0.32em] text-gold uppercase">A marca</p>
           <h2 className="mt-3 font-serif text-4xl text-burgundy md:text-5xl">
-            Petiscos que <span className="font-script text-5xl text-gold md:text-6xl">viciam</span>
+            Pipocas que <span className="font-script text-5xl text-gold md:text-6xl">viciam</span>
           </h2>
           <p className="mt-6 max-w-md text-base leading-relaxed text-burgundy/75">
             Na PIPOCRUNCH, cada pipoca começa caramelizada no ponto certo e ganha
@@ -15,7 +15,7 @@ export function About() {
           <div className="mt-10 grid grid-cols-3 gap-4 border-t border-burgundy/10 pt-8">
             {[
               ["MUSH", "Caramelizada"],
-              ["+16", "Sabores"],
+              ["2", "Linhas"],
               ["JGS", "Santa Catarina"],
             ].map(([value, label]) => (
               <div key={label}>

@@ -1,4 +1,4 @@
-import { filledFlavors, gourmetCoatings, snacks } from "@/lib/site";
+import { filledFlavors, gourmetCoatings } from "@/lib/site";
 
 function FlavorGrid({
   title,
@@ -39,16 +39,12 @@ export function Flavors() {
           Sabores da casa
         </h2>
         <p className="mt-4 max-w-xl text-burgundy/70">
-          Coberturas crocantes, recheios cremosos e petiscos agridoce. Escolha o
+          Coberturas crocantes e recheios cremosos. Escolha o
           seu e peça no WhatsApp.
         </p>
 
         <div className="mt-14 grid gap-14 lg:grid-cols-2">
           <FlavorGrid title="Coberturas" script="Gourmet" flavors={gourmetCoatings} />
-          <FlavorGrid title="Salgados" script="Agridoce" flavors={snacks} />
-        </div>
-
-        <div className="mt-14">
           <FlavorGrid title="Sabores" script="Recheados" flavors={filledFlavors} />
         </div>
       </div>

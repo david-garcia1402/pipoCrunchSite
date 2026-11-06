@@ -22,8 +22,6 @@ import {
   gourmetCoatings,
   gourmetSizes,
   potSizes,
-  snackSize,
-  snacks,
   whatsappLink,
   type OrderLine,
 } from "@/lib/site";
@@ -31,11 +29,10 @@ import {
 const lines: { id: OrderLine; label: string }[] = [
   { id: "gourmet", label: "Gourmet" },
   { id: "recheadas", label: "Recheadas" },
-  { id: "petiscos", label: "Petiscos" },
 ];
 
 function isOrderLine(value: string | null): value is OrderLine {
-  return value === "gourmet" || value === "recheadas" || value === "petiscos";
+  return value === "gourmet" || value === "recheadas";
 }
 
 function lineFromUrl(): OrderLine | null {
@@ -48,10 +45,7 @@ function defaultsFor(next: OrderLine) {
   if (next === "gourmet") {
     return { flavor: gourmetCoatings[0].name, size: gourmetSizes[0].id };
   }
-  if (next === "recheadas") {
-    return { flavor: filledFlavors[0].name, size: potSizes[0].id };
-  }
-  return { flavor: snacks[0].name, size: snackSize.id };
+  return { flavor: filledFlavors[0].name, size: potSizes[0].id };
 }
 
 export function Order() {
@@ -67,14 +61,12 @@ export function Order() {
 
   const flavors = useMemo(() => {
     if (line === "gourmet") return gourmetCoatings;
-    if (line === "recheadas") return filledFlavors;
-    return snacks;
+    return filledFlavors;
   }, [line]);
 
   const sizes = useMemo(() => {
     if (line === "gourmet") return gourmetSizes;
-    if (line === "recheadas") return potSizes;
-    return [snackSize];
+    return potSizes;
   }, [line]);
 
   const selectedSize = sizes.find((item) => item.id === size) ?? sizes[0];

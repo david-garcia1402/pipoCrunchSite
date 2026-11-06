@@ -1,9 +1,8 @@
-import { filledFlavors, gourmetCoatings, snacks } from "@/lib/site";
+import { filledFlavors, gourmetCoatings } from "@/lib/site";
 
 const items = [
   ...gourmetCoatings.map((f) => f.name),
   ...filledFlavors.map((f) => f.name),
-  ...snacks.map((f) => f.name),
 ];
 
 export function FlavorMarquee() {

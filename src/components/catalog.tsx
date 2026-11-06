@@ -5,9 +5,6 @@ import {
   gourmetCoatings,
   gourmetSizes,
   potSizes,
-  site,
-  snackSize,
-  snacks,
   type OrderLine,
 } from "@/lib/site";
 
@@ -38,15 +35,7 @@ const lines: {
     extras: filledFlavors.map((flavor) => flavor.name).join(" · "),
     image: "/images/chocolate.jpg",
   },
-  {
-    id: "petiscos",
-    kicker: "Salgados",
-    title: "Petiscos agridoce",
-    description: "Aquela crocância que vicia a cada mordida.",
-    sizes: [snackSize],
-    extras: snacks.map((s) => s.name).join(" · "),
-    image: "/images/caramel-bowl.jpg",
-  },
+
 ];
 
 export function Catalog() {
@@ -61,16 +50,14 @@ export function Catalog() {
             </h2>
           </div>
           <a
-            href={site.catalog}
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#sabores"
             className="text-[11px] tracking-[0.22em] text-cream/70 uppercase underline-offset-4 hover:text-gold hover:underline"
           >
-            Ver catálogo completo
+            Ver sabores disponíveis
           </a>
         </div>
 
-        <div className="mt-14 grid gap-6 lg:grid-cols-3">
+        <div className="mt-14 grid gap-6 lg:grid-cols-2">
           {lines.map((line) => (
             <article
               key={line.id}
