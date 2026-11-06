@@ -1,6 +1,7 @@
 import { Gift, PartyPopper, Sparkles } from "lucide-react";
 import { OrderLineLink } from "@/components/order-line-link";
 import {
+  filledFlavors,
   gourmetCoatings,
   gourmetSizes,
   potSizes,
@@ -34,7 +35,7 @@ const lines: {
     title: "Pipocas recheadas",
     description: "Pipoca MUSH caramelizada recheada com muito sabor.",
     sizes: potSizes,
-    extras: "12 sabores recheados",
+    extras: filledFlavors.map((flavor) => flavor.name).join(" · "),
     image: "/images/chocolate.jpg",
   },
   {
